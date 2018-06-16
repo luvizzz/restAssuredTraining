@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
 
-import org.junit.Assert;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -32,7 +32,7 @@ public class TestReqRes {
 		request = RestAssured
 				.given()
 					.pathParam(param, value)
-					//.log().all()
+					.log().all()
 					;
 	}
 	
@@ -40,7 +40,7 @@ public class TestReqRes {
 		request = RestAssured
 				.given()
 					.params(param, value)
-					//.log().all()
+					.log().all()
 					;
 	}
 	
@@ -56,7 +56,7 @@ public class TestReqRes {
 				.when()
 				 	.get("api/users/")
 				 .then()
-				 	//.log().all()
+				 	.log().all()
 				 	.extract().jsonPath()
 				 	;
 	}
@@ -67,7 +67,7 @@ public class TestReqRes {
 				.when()
 				 	.get("api/users/{id}")
 				 .then()
-				 	//.log().all()
+				 	.log().all()
 				 	.extract().jsonPath()
 				 	;
 	}
