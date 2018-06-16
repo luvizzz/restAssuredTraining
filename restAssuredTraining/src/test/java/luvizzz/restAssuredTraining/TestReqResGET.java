@@ -13,12 +13,12 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.specification.RequestSpecification;
 import restAssuredTraining.User;
 
-public class TestReqRes {
+public class TestReqResGET {
 
 	private RequestSpecification request;
 	private List<User> users;
 	
-	public TestReqRes() {
+	public TestReqResGET() {
 		RestAssured.baseURI = "https://reqres.in/";
 		users = new ArrayList<User>();
 		users.clear();
