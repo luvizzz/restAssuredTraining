@@ -8,68 +8,20 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import io.restassured.*;
+import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
-import io.restassured.specification.RequestSpecification;
 import restAssuredTraining.User;
 
-public class TestReqResGET {
-
-	private RequestSpecification request;
+public class TestReqResGET  extends Utils {
 	private List<User> users;
 	
 	public TestReqResGET() {
-		RestAssured.baseURI = "https://reqres.in/";
 		users = new ArrayList<User>();
 		users.clear();
 	}
 
 	@BeforeClass
 	public void setup() {
-	}
-
-	public void setPathParam(String param, Object value) {
-		request = RestAssured
-				.given()
-					.pathParam(param, value)
-					.log().all()
-					;
-	}
-	
-	public void setQueryParam(String param, Object value) {
-		request = RestAssured
-				.given()
-					.params(param, value)
-					.log().all()
-					;
-	}
-	
-	public void expectResponseWithCode(int responseCode) {
-			request
-			 	.expect()
-			 		.statusCode(responseCode);
-	}
-
-	public JsonPath getAllUsers() {
-		return
-			request
-				.when()
-				 	.get("api/users/")
-				 .then()
-				 	.log().all()
-				 	.extract().jsonPath()
-				 	;
-	}
-
-	public JsonPath getUser() {
-		return
-			request
-				.when()
-				 	.get("api/users/{id}")
-				 .then()
-				 	.log().all()
-				 	.extract().jsonPath()
-				 	;
 	}
 
 	private void printListOfUsers(List<User> users) {
@@ -80,34 +32,21 @@ public class TestReqResGET {
 		}
 	}
 
-	private void compareUsers(User expectedUser, User userById) {
-		Assert.assertEquals(expectedUser.getId(), userById.getId());
-		Assert.assertEquals(expectedUser.getFirst_name(), userById.getFirst_name());
-		Assert.assertEquals(expectedUser.getLast_name(), userById.getLast_name());
-		Assert.assertEquals(expectedUser.getAvatar(), userById.getAvatar());
-	}
-
-	private User getUserByIdWithExpectedResponseCode(int Id, int expectedResponseCode) {
-		setPathParam("id", Id);
-		expectResponseWithCode(expectedResponseCode);
-		return getUser().getObject("data", User.class);
-	}
-
-	@Test
+	@Test(groups= {"GET"})
 	public void getUsersFromPage1() {
 		setQueryParam("page", 1);
 		expectResponseWithCode(200);
 		getAllUsers();
 	}
 
-	@Test
+	@Test(groups= {"GET"})
 	public void getUsersFromPage2() {
 		setQueryParam("page", 2);
 		expectResponseWithCode(200);
 		getAllUsers();
 	}
 
-	@Test
+	@Test(groups= {"GET"})
 	public void getUsersFromPage3() {
 		setQueryParam("page", 3);
 		expectResponseWithCode(200);
@@ -118,7 +57,7 @@ public class TestReqResGET {
 	 * This test populates the Global Variable users with all information fetched from the system.
 	 * It uses a serialization (provided by jackson plugin) to input data retrieved from a JSONPath object into a List<User> variable
 	 */
-	@Test(groups = {"populatesGlobalVariables"})
+	@Test(groups = {"GET", "populatesGlobalVariables"})
 	public void populateAllUsers() {
 		//Runs first a GET operation to fetch "total" information: the total amount of users present in the system
 		setQueryParam("page", 1);
@@ -141,7 +80,7 @@ public class TestReqResGET {
 	 * Depends on this list (users) to be already populated.
 	 * The test method populateAllUsers updates this variable.
 	 */
-	@Test(dependsOnGroups= {"populatesGlobalVariables"})
+	@Test(dependsOnGroups= {"populatesGlobalVariables"}, groups= {"GET"})
 	public void validateUserID1() throws Exception{
 		int id = 1;
 		User expectedUser = new User();
@@ -149,7 +88,7 @@ public class TestReqResGET {
 			throw new EmptyStackException();
 		}
 		for(User item : users) {
-			if(item.getId() == id) {
+			if(item.getId().equals(Integer.toString(id))) {
 				expectedUser = item;
 				break;
 			}
@@ -162,7 +101,7 @@ public class TestReqResGET {
 	 * Depends on this list (users) to be already populated.
 	 * The test method populateAllUsers updates this variable.
 	 */
-	@Test(dependsOnGroups= {"populatesGlobalVariables"})
+	@Test(dependsOnGroups= {"populatesGlobalVariables"}, groups= {"GET"})
 	public void validateUserID5() throws Exception{
 		int id = 5;
 		User expectedUser = new User();
@@ -170,7 +109,7 @@ public class TestReqResGET {
 			throw new EmptyStackException();
 		}
 		for(User item : users) {
-			if(item.getId() == id) {
+			if(item.getId().equals(Integer.toString(id))) {
 				expectedUser = item;
 				break;
 			}
@@ -178,7 +117,7 @@ public class TestReqResGET {
 		compareUsers(expectedUser, getUserByIdWithExpectedResponseCode(id,200));
 	}
 
-	@Test()
+	@Test(groups= {"GET", "negative"})
 	public void getBadUser() {
 		getUserByIdWithExpectedResponseCode(200,404);
 	}
